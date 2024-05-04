@@ -1,1 +1,1 @@
-# django_starter
+# dev_django_starter
