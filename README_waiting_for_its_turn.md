@@ -1,12 +1,8 @@
+
+
 # Devnotes
 
-take from devnotes snippets something useful... 
-
-https://github.com/azegas/devnotes/blob/master/Django/snippets/snippets-setup.md
-
-# Create project
-
-## Creating a simple Django project
+# Creating a simple Django project
 
 ## TODO Handle static files (css/js)
 

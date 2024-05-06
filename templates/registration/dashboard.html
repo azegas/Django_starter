@@ -1,0 +1,13 @@
+{% extends "base/base.html" %}
+
+{% block content %}
+
+    <h2>Welcome to your dashboard, {{ user_name }}!</h2>
+
+    <p><strong>User name:</strong> {{ user_name }}</p>
+    <p><strong>Email:</strong> {{ user_email }}</p>
+    <p><strong>Date of birth:</strong> {{ user_date_of_birth }}</p>
+
+    <a href="{% url 'password_reset' %}">Change password</a>
+
+{% endblock content %}
