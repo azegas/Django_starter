@@ -1,12 +1,21 @@
-# Introduction to dev_django_starter
+* Introduction to dev_django_starter
 
 This is a Django app that I use at the beginning of every new Django project.
 
 You can delete this readme.md file when you work on your project.
 
-# Set up virtual environment
+*  Set up virtual environment
 
 On windows, we will user virtualenvwrapper - https://virtualenvwrapper.readthedocs.io/en/latest/command_ref.html
+
+#+begin_src bash
+  pip install virtualenvwrapper
+  mkvirtualenv venv
+  lsvirtualenv
+  workon venv
+  pip install django
+  pip freeze > requirements.txt
+#+end_src 
 
 ```bash
 pip install virtualenvwrapper
@@ -17,7 +26,7 @@ pip install django
 pip freeze > requirements.txt
 ```
 
-# Start a Django project
+*  Start a Django project
 
 ```bash
 django-admin startproject project .
@@ -26,7 +35,7 @@ python manage.py runserver
 
 > We will not create and run migrations until the later point (because we will create a custom user model).
 
-# Setting up the templates
+*  Setting up the templates
 
 For django to be able to find our html files, let's tell django about their location in `settings.py`, make a modification to the TEMPLATES variable t:
 
@@ -34,7 +43,7 @@ For django to be able to find our html files, let's tell django about their loca
 "DIRS": [os.path.join(BASE_DIR, "templates")],
 ```
 
-# Create a base template
+*  Create a base template
 
 Inside of the `templates` folder, create `base` folder and then `base.html` in it with such content:
 
@@ -93,7 +102,7 @@ Inside of the `templates` folder, create `base` folder and then `base.html` in i
 </html>
 ```
 
-# Create an `index.html` for the project
+*  Create an `index.html` for the project
 
 To be able to use the index.html we have just created, we need to set up the templates correctly.
 
@@ -113,7 +122,7 @@ Go ahead and create `index.html` inside of the `templates/project` directory, th
 {% endblock content %}
 ```
 
-# Create a basic view for the project
+*  Create a basic view for the project
 
 ```python
 """A module for project views. Currently have only index."""
@@ -143,9 +152,9 @@ path("", Index.as_view(), name="index"),
 
 Do a `python manage.py runserver` now and you will be presented with the index page.
 
-# Setup Authentication
+*  Setup Authentication
 
-## Django Login, Logout, Signup, Password Change, and Password Reset
+**  Django Login, Logout, Signup, Password Change, and Password Reset
 
 In this section, we'll configure a complete [user authentication system](https://docs.djangoproject.com/en/5.0/topics/auth/) in Django consisting of login, logout, signup, password change, and password reset.
 
@@ -191,7 +200,7 @@ accounts/reset/<uidb64>/<token>/ [name='password_reset_confirm']
 accounts/reset/done/ [name='password_reset_complete']
 ```
 
-### Log In Page
+***  Log In Page
 
 Let's make our login page! By default, Django will look within a templates folder called `registration` for auth templates. The login template is called `login.html`.
 
@@ -237,7 +246,7 @@ Our login worked because it redirected us to the homepage which we have created 
 
 But how do we log out? The only option currently is to go into the admin panel at `http://127.0.0.1:8000/admin/` and click the "Log Out" link in the upper right corner. The "Logout" link will log us out.
 
-## Log Out Button
+** Log Out Button
 
 We already have this in our `base.html`:
 
@@ -256,7 +265,7 @@ LOGIN_REDIRECT_URL = "index"
 LOGOUT_REDIRECT_URL = "index"  # new
 ```
 
-## Sign Up Page
+** Sign Up Page
 
 Now that we have sorted out logging in and logging out, it is time to add a signup page to our basic Django site. If you recall, Django **does not** provide a built-in view or URL for this, so we must code up the form and the page ourselves.
 
@@ -367,7 +376,7 @@ You can see the two users for our Django project, the superuser and the regular 
 
 It is possible to customize the Django admin in many ways, but for now, we can see the basic information. Clicking on an individual `username` opens up a change user page where you can edit user information.
 
-## Password Change
+** Password Change
 
 Django provides a default implementation of password change functionality. To try it out, log out of your superuser account and log in with your regular user.
 
@@ -382,7 +391,7 @@ If you want to customize these two password change pages to match the look and f
 
 We can add a password change link to the `base.html`.
 
-## Password Reset
+** Password Reset
 
 A password reset page is useful when a user forgets their log in information: a user can enter in their email address and receive a cryptographically secure email with a one-time link to a password reset page. This is typically available to logged-out users. Django has built-in functionality for this that only requires a small amount of configuration.
 
@@ -423,19 +432,19 @@ If you want to customize the templates involved with password reset, they are lo
 
 
 
-## Creating a Custom User Model
+** Creating a Custom User Model
 
 Django ships with a built-in [User model](https://docs.djangoproject.com/en/5.0/ref/contrib/auth/#django.contrib.auth.models.User) for authentication and if you'd like a basic tutorial on how to implement login, logout, signup and so on see the Django Login and Logout tutorial for more.
 
 However, for a real-world project, the [official Django documentation](https://docs.djangoproject.com/en/5.0/topics/auth/customizing/#using-a-custom-user-model-when-starting-a-project) highly recommends using a custom user model instead; it provides far more flexibility down the line so, as a general rule, **always use a custom user model for all new Django projects**.
 
-### AbstractUser vs AbstractBaseUser
+**# AbstractUser vs AbstractBaseUser
 
 There are two modern ways to create a custom user model in Django: `AbstractUser` and `AbstractBaseUser`. In both cases, we can subclass them to extend existing functionality; however, `AbstractBaseUser` requires **much, much more work**. Seriously, only mess with it if you know what you're doing. And if you did, you wouldn't be reading this tutorial, would you?
 
 So we'll use `AbstractUser`, which subclasses `AbstractBaseUser` but provides more default configuration.
 
-### Custom User Model
+*** Custom User Model
 
 Creating our initial custom user model requires four steps:
 
@@ -650,37 +659,37 @@ Here is a test to make sure CDN works.
 ```
 
 
-## Handling secret environment variables
+** Handling secret environment variables
 
-## Create basic index page
+** Create basic index page
 
-## Handling images
+** Handling images
 
-## Handling css/js
+** Handling css/js
 
-## Other minor things
+** Other minor things
 
-## Basic user authentication and custom user model
+** Basic user authentication and custom user model
 
-## Basic logging
+** Basic logging
 
-## Basic CRUD
+** Basic CRUD
 
 Basic CRUD app for reference (base detail/list templates/views) (meke app list in whcih you can specify the name of the app and it will be represented in all views/urls/etc. Like app list. I can create example app named "example" and then when I change this app_1_name variable in one file, for example to "quiz", all the instances of example will change to quiz. context predessesor maybe?)
 
-## change /admin to something else
-## add messages support
+** change /admin to something else
+** add messages support
 for logging in/out, password change, etc
 
 # Post-app setup
-## linting
-## formatting
-## makefile
-## pre-commit
-## github actions
-## basic tests/coverage
-## basic docker file
-## A few databases set up with examples
-## django debug toolbar and other crucial django packages
-## devnotes snippets, mb something useful - https://github.com/azegas/devnotes/blob/master/Django/snippets/snippets-setup.md
-## mkdocs for documentation
+** linting
+** formatting
+** makefile
+** pre-commit
+** github actions
+** basic tests/coverage
+** basic docker file
+** A few databases set up with examples
+** django debug toolbar and other crucial django packages
+** devnotes snippets, mb something useful - https://github.com/azegas/devnotes/blob/master/Django/snippets/snippets-setup.md
+** mkdocs for documentation
