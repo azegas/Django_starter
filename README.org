@@ -17,21 +17,12 @@ On windows, we will user virtualenvwrapper - https://virtualenvwrapper.readthedo
   pip freeze > requirements.txt
 #+end_src 
 
-```bash
-pip install virtualenvwrapper
-mkvirtualenv venv
-lsvirtualenv
-workon venv
-pip install django
-pip freeze > requirements.txt
-```
-
 *  Start a Django project
 
-```bash
+#+begin_src bash
 django-admin startproject project .
 python manage.py runserver
-```
+#+end_src
 
 > We will not create and run migrations until the later point (because we will create a custom user model).
 
@@ -39,15 +30,15 @@ python manage.py runserver
 
 For django to be able to find our html files, let's tell django about their location in `settings.py`, make a modification to the TEMPLATES variable t:
 
-```python
+#+begin_src python
 "DIRS": [os.path.join(BASE_DIR, "templates")],
-```
+#+end_src
 
 *  Create a base template
 
 Inside of the `templates` folder, create `base` folder and then `base.html` in it with such content:
 
-```django
+#+begin_src django
 {% load static %}
 <!DOCTYPE html>
 <html lang="en">
@@ -100,7 +91,7 @@ Inside of the `templates` folder, create `base` folder and then `base.html` in i
 
 </body>
 </html>
-```
+#+end_src
 
 *  Create an `index.html` for the project
 
@@ -108,7 +99,7 @@ To be able to use the index.html we have just created, we need to set up the tem
 
 Go ahead and create `index.html` inside of the `templates/project` directory, the content of it:
 
-```django
+#+begin_src django
 {% extends "base/base.html" %}
 
 {% block content %}
@@ -120,11 +111,11 @@ Go ahead and create `index.html` inside of the `templates/project` directory, th
 <br>
 
 {% endblock content %}
-```
+#+end_src
 
 *  Create a basic view for the project
 
-```python
+#+begin_src python
 """A module for project views. Currently have only index."""
 
 from django.shortcuts import render
@@ -142,13 +133,13 @@ class Index(View):
         """
 
         return render(request, "project/index.html")
-```
+#+end_src
 
 Add the view to the project's urls `project/urls.py`:
 
-```python
+#+begin_src python
 path("", Index.as_view(), name="index"),
-```
+#+end_src
 
 Do a `python manage.py runserver` now and you will be presented with the index page.
 
@@ -162,7 +153,7 @@ Inspiration from here - https://learndjango.com/tutorials/django-login-and-logou
 
 The Django `contrib` module provides built-in apps to help with development. In the `project/settings.py` file under `INSTALLED_APPS`, you can see that `auth` is listed and available to us.
 
-```python
+#+begin_src python
 # project/settings.py
 INSTALLED_APPS = [
     "django.contrib.admin",
@@ -172,11 +163,11 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
 ]
-```
+#+end_src
 
 To use the `auth` app, we need to add it to our project-level `project/urls.py` file. At the top, import include and create a new URL path at accounts/. You can choose a different URL path, but using accounts/ is a standard practice and requires less customization later.
 
-```python
+#+begin_src python
 # project/urls.py
 from django.contrib import admin
 from django.urls import path, include  # new
@@ -185,11 +176,11 @@ urlpatterns = [
     path("admin/", admin.site.urls),
     path("accounts/", include("django.contrib.auth.urls")),  # new
 ]
-```
+#+end_src
 
 The auth app we've now included provides us with multiple [authentication views](https://docs.djangoproject.com/en/5.0/topics/auth/default/#module-django.contrib.auth.views) and URLs for handling login, logout, password change, password reset, etc. It notably does not include a view and URL for signup, so we have to configure that ourselves.
 
-```
+#+begin_src 
 accounts/login/ [name='login']
 accounts/logout/ [name='logout']
 accounts/password_change/ [name='password_change']
@@ -198,7 +189,7 @@ accounts/password_reset/ [name='password_reset']
 accounts/password_reset/done/ [name='password_reset_done']
 accounts/reset/<uidb64>/<token>/ [name='password_reset_confirm']
 accounts/reset/done/ [name='password_reset_complete']
-```
+#+end_src
 
 ***  Log In Page
 
@@ -208,7 +199,7 @@ Create a new project-level directory called templates and a directory called reg
 
 Then create a `templates/registration/login.html` file with your text editor and include the following code:
 
-```django
+#+begin_src django
 <!-- templates/registration/login.html -->
 <h2>Log In</h2>
 <form method="post">
@@ -216,29 +207,29 @@ Then create a `templates/registration/login.html` file with your text editor and
   {{ form }}
   <button type="submit">Log In</button>
 </form>
-```
+#+end_src
 
 This code is a standard Django form using `POST` to send data and `{% csrf_token %}` tags for security concerns, namely to prevent a CSRF Attack. The form's contents are displayed with `{{ form }}`, and then we add a "submit" button.
 
 Our login functionality now works, but we should specify where to redirect the user upon a successful login using the `LOGIN_REDIRECT_URL` setting. At the bottom of the `settings.py` file, add the following to redirect the user to the homepage.
 
-```python
+#+begin_src python
 # project/settings.py
 LOGIN_REDIRECT_URL = "index"  # new
-```
+#+end_src
 
 If you start the Django server again with `python manage.py runserver` and navigate to our login page at `http://127.0.0.1:8000/accounts/login/`, you'll see the login page.
 
 We can only log in if we have a user account. And since adding a signup form is yet to come, the most straightforward approach is to make a superuser account from the command line. Quit the server with `Control+c` and then run the command `python manage.py createsuperuser`. Answer the prompts and note that your password will not appear on the screen when typing for security reasons.
 
-```
+#+begin_src 
 (.venv) > python manage.py createsuperuser
 Username (leave blank to use 'root'):
 Email address: 
 Password:
 Password (again):
 Superuser created successfully.
-```
+#+end_src
 
 Now start the server again with python manage.py runserver and refresh the page at `http://127.0.0.1:8000/accounts/login/`. Enter the login info for your just-created superuser.
 
@@ -250,20 +241,20 @@ But how do we log out? The only option currently is to go into the admin panel a
 
 We already have this in our `base.html`:
 
-```django
+#+begin_src django
 <form action="{% url 'logout' %}" method="post">
   {% csrf_token %}
   <button type="submit">Log Out</button>
 </form>
-```
+#+end_src
 
 Then we need to update `settings.py` with our redirect link, `LOGOUT_REDIRECT_URL`. Add it right next to our login redirect so the bottom of the `settings.py` file should look as follows:
 
-```python
+#+begin_src python
 # project/settings.py
 LOGIN_REDIRECT_URL = "index"
 LOGOUT_REDIRECT_URL = "index"  # new
-```
+#+end_src
 
 ** Sign Up Page
 
@@ -271,9 +262,9 @@ Now that we have sorted out logging in and logging out, it is time to add a sign
 
 To begin, stop the local webserver with Control+c and create a dedicated app called accounts, which we'll use for our custom account logic.
 
-```
+#+begin_src 
 python manage.py startapp accounts
-```
+#+end_src
 
 We then move the newly created `accounts` app into `apps` folder for better structure in the future. All the apps will be in one folder.
 
@@ -281,7 +272,7 @@ Go to `apps.py` and fix the name variable to be `name = "apps.accounts"`. From n
 
 Make sure to add the new app to the `INSTALLED_APPS` setting in the `project/settings.py` file:
 
-```python
+#+begin_src python
 # project/settings.py
 INSTALLED_APPS = [
     "django.contrib.admin",
@@ -292,11 +283,11 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "apps.accounts",  # new
 ]
-```
+#+end_src
 
 Then add a URL path in `project/urls.py` that is **above** our included Django `auth` app. The order is important here because Django looks for URL patterns from top-to-bottom. We want to maintain the pattern of having our user authentication logic at `accounts/` but ensure that the signup page loads first.
 
-```python
+#+begin_src python
 # django_project/urls.py
 from django.contrib import admin
 from django.urls import path, include
@@ -309,11 +300,11 @@ urlpatterns = [
     path("accounts/", include("django.contrib.auth.urls")),
     path("", Index.as_view(), name="index"),
 ]
-```
+#+end_src
 
 Next, create a new file called `accounts/urls.py` with your text editor and add the following code.
 
-```python
+#+begin_src python
 # accounts/urls.py
 from django.urls import path
 
@@ -323,11 +314,11 @@ from .views import SignUpView
 urlpatterns = [
     path("signup/", SignUpView.as_view(), name="signup"),
 ]
-```
+#+end_src
 
 Now for the `accounts/views.py` file:
 
-```python
+#+begin_src python
 # accounts/views.py
 from django.contrib.auth.forms import UserCreationForm
 from django.urls import reverse_lazy
@@ -338,7 +329,7 @@ class SignUpView(CreateView):
     form_class = UserCreationForm
     success_url = reverse_lazy("login")
     template_name = "registration/signup.html"
-```
+#+end_src
 
 At the top we import [UserCreationForm](https://docs.djangoproject.com/en/5.0/topics/auth/default/#django.contrib.auth.forms.UserCreationForm), [reverse_lazy](https://docs.djangoproject.com/en/5.0/ref/urlresolvers/#reverse-lazy), and the generic class-based view [CreateView](https://docs.djangoproject.com/en/5.0/ref/class-based-views/generic-editing/#django.views.generic.edit.CreateView).
 
@@ -346,7 +337,7 @@ We are creating a new class called `SignUpView` that extends `CreateView`, sets 
 
 Ok, now for the final step. Create a new template, `templates/registration/signup.html`, and populate it with this code that looks almost exactly like what we used for `login.html`.
 
-```django
+#+begin_src django
 <!-- templates/registration/signup.html -->
 {% extends "base.html" %}
 
@@ -360,7 +351,7 @@ Ok, now for the final step. Create a new template, `templates/registration/signu
   <button type="submit">Sign Up</button>
 </form>
 {% endblock %}
-```
+#+end_src
 
 We're done! To confirm it all works, spin up our local server with `python manage.py runserver` and navigate to `http://127.0.0.1:8000/accounts/signup/`.
 
@@ -409,10 +400,10 @@ Make sure to click the "Save" button at the bottom of the page. Then click the "
 
 Django defaults to an [SMTP](https://docs.djangoproject.com/en/5.0/ref/settings/#email-backend) email backend that requires some configuration. To test the password reset flow locally, we can update the `django_project/settings.py` file to output emails to the console instead. Add this one line to the bottom of the file.
 
-```python
+#+begin_src python
 # django_project/settings.py
 EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend" # new
-```
+#+end_src
 
 Finally, we can try the Password Reset page again at `http://127.0.0.1:8000/accounts/password_reset/`. Enter the email address for your regular user account and click the "Change My Password" button. It will redirect you to the password reset sent page.
 
@@ -455,15 +446,15 @@ Creating our initial custom user model requires four steps:
   
 In `settings.py`, we'll use the `AUTH_USER_MODEL` config to tell Django to use our new custom user model instead of the built-in `User` model. We'll call our custom user model `CustomUser`.
 
-```python
+#+begin_src python
 # project/settings.py
 AUTH_USER_MODEL = "accounts.CustomUser"  # new
-```
+#+end_src
 
 Now update `accounts/models.py` with a new User model, which we'll call `CustomUser`.
 
 
-```python
+#+begin_src python
 """A module to register account app models to django admin."""
 
 from django.contrib.auth.models import AbstractUser
@@ -476,11 +467,11 @@ class CustomUser(AbstractUser):
     date_of_birth = models.DateField(null=True, blank=True)
     # add additional fields in here
 
-```
+#+end_src
 
 We need new versions of two form methods that receive heavy use working with users. Create a new file `accounts/forms.py`. We'll update it with the following code to largely subclass the existing forms.
 
-```python
+#+begin_src python
 # accounts/forms.py
 """A module for auth page forms. They are later used in the views.py"""
 
@@ -518,11 +509,11 @@ class CustomUserChangeForm(UserChangeForm):
     date_of_birth = forms.DateField(
         widget=forms.DateInput(attrs={"type": "date"}),
     )
-```
+#+end_src
 
 Finally, we update `admin.py` since the admin is highly coupled to the default User model.
 
-```python
+#+begin_src python
 # accounts/admin.py
 
 """A module to register users app models to django admin."""
@@ -570,18 +561,18 @@ class CustomUserAdmin(UserAdmin):
 
 
 admin.site.register(CustomUser, CustomUserAdmin)
-```
+#+end_src
 
 And we're done! We can now run `makemigrations` and `migrate` for the first time to create a new database that uses the custom user model.
 
-```
+#+begin_src 
 (.venv) $ python manage.py makemigrations accounts
 (.venv) $ python manage.py migrate
-```
+#+end_src
 
 The last step is our `views.py` file in the `accounts` app which will contain our signup form. We will modify the already created form.
 
-```python
+#+begin_src python
 """A module for accounts app views."""
 
 from django.contrib.auth.decorators import login_required
@@ -598,11 +589,11 @@ class SignUpView(CreateView):
     form_class = CustomUserCreationForm
     success_url = reverse_lazy("login")
     template_name = "registration/signup.html"
-```
+#+end_src
 
 Create a dashboard for the user:
 
-```python
+#+begin_src python
 # accounts/views.py
 @login_required
 def dashboard_view(request):
@@ -617,11 +608,11 @@ def dashboard_view(request):
     }
 
     return render(request, "registration/dashboard.html", context)
-```
+#+end_src
 
 Then update the views:
 
-```python
+#+begin_src python
 # accounts/urls.py
 """A module that contains all the urls for the accounts app."""
 
@@ -633,7 +624,7 @@ urlpatterns = [
     path("signup/", SignUpView.as_view(), name="signup"),
     path("dashboard/", dashboard_view, name="dashboard"), # new
 ]
-```
+#+end_src
 
 
 
@@ -642,7 +633,7 @@ https://tailwindcss.com/docs/installation/play-cdn. For development purposes, I 
 
 Here is a test to make sure CDN works.
 
-```html
+#+begin_src html
 <!doctype html>
 <html>
 <head>
@@ -656,7 +647,7 @@ Here is a test to make sure CDN works.
   </h1>
 </body>
 </html>
-```
+#+end_src
 
 
 ** Handling secret environment variables
