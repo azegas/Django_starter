@@ -676,6 +676,7 @@ for logging in/out, password change, etc
 ** linting
 ** formatting
 ** makefile
+## add A script to start from zero with your models in django project
 ** pre-commit
 ** github actions
 ** basic tests/coverage
