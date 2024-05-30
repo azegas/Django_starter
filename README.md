@@ -6,15 +6,6 @@
 - Custom 404, 500, and 403 error pages
 ----
 
-## Table of Contents
-* **[Installation](#installation)**
-  * [Pip](#pip)
-  * [Docker](#docker)
-* [Next Steps](#next-steps)
-* [Contributing](#contributing)
-* [Support](#support)
-* [License](#license)
-
 ----
 
 ## 📖 Installation
