@@ -6,14 +6,13 @@
 - Custom 404, 500, and 403 error pages
 ----
 
-----
-
 ## 📖 Installation
-DjangoX can be installed via Pip or Docker. To start, clone the repo to your local computer and change into the proper directory.
+Django_starter can be installed via Pip. To start, clone the repo to your local
+computer and change into the proper directory.
 
 ```
-$ git clone https://github.com/wsvincent/djangox.git
-$ cd djangox
+$ https://github.com/azegas/django_starter.git
+$ cd django_starter
 ```
 
 ### Pip
