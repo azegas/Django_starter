@@ -7,6 +7,6 @@ class Index(View):
     def get(self, request):
         return render(request, "project/index.html")
 
-    
+
 def test(request):
-    return HttpResponse('<h2>Test</h2>')
+    return HttpResponse("<h2>Test</h2>")

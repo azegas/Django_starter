@@ -6,5 +6,5 @@ from apps.accounts.views import SignUpView, dashboard_view
 
 urlpatterns = [
     path("signup/", SignUpView.as_view(), name="signup"),
-    path("dashboard/", dashboard_view, name="dashboard"), # new
+    path("dashboard/", dashboard_view, name="dashboard"),
 ]

@@ -34,8 +34,7 @@ SECRET_KEY = os.getenv("SECRET_KEY")
 # is 'True' (case-sensitive), and False otherwise.
 DEBUG = os.getenv("DEBUG") == "True"
 
-ALLOWED_HOSTS = ['*']
-
+ALLOWED_HOSTS = ["*"]
 
 # Application definition
 

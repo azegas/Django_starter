@@ -1422,6 +1422,12 @@ However, if maintainability, parallelism, and isolation are important
 considerations, splitting the workflow into smaller files may be beneficial
 despite the additional resource usage.
 
+** Black formatter
+
+This section is regarding the =pyproject.toml= file.
+
+Read more - https://github.com/azegas/dotfiles/tree/master/.emacs.d#black-formatter-on-save
+
 * Other TODO's
 
 ** TODO Create a simple test app, models of it here - Models
