@@ -1,4 +1,3 @@
-# accounts/urls.py
 """A module that contains all the urls for the accounts app."""
 
 from django.urls import path

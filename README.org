@@ -1,11 +1,10 @@
-* Introduction to dev_django_starter
+* Introduction
 
 This is a Django app that I use at the beginning of every new Django project.
 
 You can delete this readme.md file when you work on your project.
 
-* Prepare the working environment
-** Set up virtual environment
+* Set up virtual environment
 
 On windows, we will user virtualenvwrapper -
 https://virtualenvwrapper.readthedocs.io/en/latest/command_ref.html
@@ -150,10 +149,9 @@ Now create a =base/navbar.html= and =base/footer.html= pages:
 #+end_src
 
 Check how homepage(index.html) looks now.
+** Add MISC items (Add css, js, images, debug toolbar)
 
-* Add MISC items (Add css, js, images, debug toolbar)
-
-** Add css
+*** Add css
 
 In project's root directory, create a folder called =static=. Inside of it,
 another folder called =css=. Inside of it, create a file called =base.css=.
@@ -198,7 +196,7 @@ Make sure these are in your =settings.py= file:
 Refresh your page. All the text should be green now, navbar and footer should
 have some styling as well!
 
-** Add js
+*** Add js
 
 Create =static/js= folder and inside of it - =scripts.js= file.
 
@@ -225,7 +223,7 @@ In =index.html= add a button that will trigger the alert function:
 
 Reload the page. Clicking on the button should trigger js code.
 
-** Add images
+*** Add images
 
 Now let's say you want to serve an image from the =index.html= page.
 
@@ -249,6 +247,164 @@ Then in =index.html= add such two new lines:
 #+end_src
 
 Refresh the page, image should be displayed.
+
+** Add bootstrap styling
+
+- Tailwind - needs node, bloats the html page
+- Bulma - never used, something new, not so popular?
+- Bootstrap - old and popular, got CND's for css/js
+
+Choosing bootstrap.
+
+In =base.html= add this to the head tag for bootstrap css:
+
+#+begin_src html
+  {% block css %}
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+
+  {% endblock %}
+#+end_src
+
+Find the latest tag here - https://www.bootstrapcdn.com/
+
+Then add boostrap js, at the bottom of the =base.html= page, at the closing body tag.
+
+#+begin_src html
+  {% block javascript %}
+  <!-- Bootstrap JavaScript -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+          integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
+          crossorigin="anonymous"></script>
+  {% endblock javascript %}
+#+end_src
+
+Bootstrap should work now.
+
+** HTML templates for error messages
+
+Whenever the debug is True we will see the debug information and why certain
+page could not be opened. But whenever the debug is False, we have nothing so
+show as of now besides the standard web browser message.
+
+Instead of that, we will create our own.
+
+https://www.w3schools.com/django/django_404.php
+
+Whenever the debug is True we will see the debug information and why
+certain page could not be opened. But whenever the debug is False, we
+have nothing so show as of now besides the standard web browser
+message.
+
+Instead of that, we will create our own.
+
+https://www.w3schools.com/django/django_404.php
+
+403_csrf.html
+
+#+begin_src html
+  {% extends '_base.html' %}
+
+  {% block title %}Forbidden (403){% endblock title %}
+
+  {% block content %}
+      <h1>Forbidden (403)</h1>
+      <p>CSRF verification failed. Request aborted.</p>
+  {% endblock content %}
+#+end_src
+
+404.html
+
+#+begin_src html
+  {% extends '_base.html' %}
+
+  {% block title %}404 Page not found{% endblock %}
+
+  {% block content %}
+      <h1>Page not found</h1>
+  {% endblock content %}
+#+end_src
+
+500.html
+
+#+begin_src html
+  {% extends '_base.html' %}
+
+  {% block title %}500 Server Error{% endblock %}
+
+  {% block content %}
+      <h1>500 Server Error</h1>
+      <p>Looks like something went wrong!</p>
+  {% endblock content %}
+#+end_src
+
+Now turn debug to False, add allowed hosts and go to a random url to check if
+the templates are being read:
+
+#+begin_src python
+  DEBUG = False
+  ALLOWED_HOSTS = ['127.0.0.1', 'localhost']
+#+end_src
+
+** Environment variables
+
+We don't want to push secret variables to github.
+
+Such variables that should be kept secret are:
+- Secret key
+- Debug
+
+#+begin_src bash
+  pip install python-dotenv
+#+end_src
+
+#+begin_src python
+  from dotenv import load_dotenv
+
+  # Load environment variables from .env
+  load_dotenv()
+#+end_src
+
+#+begin_src python
+  SECRET_KEY = os.getenv("SECRET_KEY")
+  DEBUG = os.getenv("DEBUG") == "True"
+#+end_src
+
+Now let's create .env_template file that will act as our template for secret
+environment variables, so we don't forget what we are keeping in secret
+
+#+begin_src bash
+  # no commas after variable declaration
+  # no spaces before/after =
+
+  SECRET_KEY=""
+  DEBUG=True
+
+  POSTGRESQL_REMOTE_DB_NAME=""
+  POSTGRESQL_REMOTE_DB_USER=""
+  POSTGRESQL_REMOTE_DB_PASSWORD=""
+  POSTGRESQL_REMOTE_DB_HOST=""
+  POSTGRESQL_REMOTE_DB_PORT=""
+
+  POSTGRESQL_LOCAL_DB_NAME=""
+  POSTGRESQL_LOCAL_DB_USER=""
+  POSTGRESQL_LOCAL_DB_PASSWORD=""
+  POSTGRESQL_LOCAL_DB_HOST=""
+  POSTGRESQL_LOCAL_DB_PORT=""
+
+  MYSQL_LOCAL_DB_NAME=""
+  MYSQL_LOCAL_DB_USER=""
+  MYSQL_LOCAL_DB_PASSWORD=""
+#+end_src
+
+Now copy =.env_template= file and make =.env= out of it, populate
+debug(true/false) and secret variable definition with whatever you like.
+
+Now you can change those variables from =.env= file.
+
+Make sure this =.env= file is not being committed to git, add it to
+=.gitignore=.
 
 * Authentication
 
@@ -817,6 +973,70 @@ our signup form. We will modify the already created form.
       template_name = "registration/signup.html"
 #+end_src
 
+** Implement crispy forms
+
+Crispy forms will allow us to style the forms nicer.
+
+Docs - https://django-crispy-forms.readthedocs.io/en/latest/index.html
+
+Great video explaining crispy forms -
+https://www.youtube.com/watch?v=MZwKoi0wu2Q&ab_channel=BugBytes
+
+Install two needed packages:
+
+#+begin_src bash
+  pip install django-crispy-forms
+  pip install crispy-bootstrap5
+#+end_src
+
+add new apps to base.py settings file:
+
+#+begin_src python
+    "crispy_forms",
+    "crispy_bootstrap5",
+#+end_src
+
+at the bottom of this file also add:
+
+#+begin_src python
+  # django-crispy-forms
+  # https://django-crispy-forms.readthedocs.io/en/latest/install.html#template-packs
+  CRISPY_TEMPLATE_PACK = "bootstrap5"
+#+end_src
+
+then in login.html, password_reset_confirm.html,
+password_reset_form.html, signup.html add ~{% load crispy_forms_tags %}~
+at the top of the file, under _base.html extension. Also change each
+form field with ~{{ form|crispy }}~.
+
+An example for login.html page:
+
+#+begin_src html
+  {% extends "_base.html" %}
+  {% load crispy_forms_tags %}
+
+  {% block content %}
+
+  {% if form.errors %}
+  <p>Your username and password didn't match. Please try again.</p>
+  {% endif %}
+
+  <h2>Log In</h2>
+  <form method="post" action="{% url 'login' %}">
+    {% csrf_token %}
+    {{ form|crispy }}
+    <button type="submit">Log In</button>
+    <p><a href="{% url 'password_reset' %}">Reset Password</a></p>
+  </form>
+
+  {% endblock %}
+#+end_src
+
+Now when you refresh any of the page that contains a form - it should
+look more nice :)
+
+Do the same with sign up form.
+
 ** Create a user dashboard
 
 #+begin_src python
@@ -908,41 +1128,99 @@ Create a html for the dashboard, content of =accounts/dashboard.html=:
   {% endblock content %}
 #+end_src
 
+* Nice to haves
+** Set up Makefile
 
+Instead of writing all the needed commands in here or in a google doc or
+something, we can create a ~Makefile~ and describe all the commands in it, so
+you yourself in other projects or other developers can use the same commands as
+you do. This will become my new standard I hope.
 
-* Add bootstrap styling
+Make is used when compiling software, it's a linux tool that comes with every
+linux installation.
 
-- Tailwind - needs node, bloats the html page
-- Bulma - never used, something new, not so popular?
-- Bootstrap - old and popular, got CND's for css/js
-
-Choosing bootstrap.
-
-In =base.html= add this to the head tag for bootstrap css:
-
-#+begin_src html
-  {% block css %}
-  <!-- Bootstrap CSS -->
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
-        integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
-
-  {% endblock %}
+#+begin_src bash
+  touch Makefile
 #+end_src
 
-Find the latest tag here - https://www.bootstrapcdn.com/
+If we now add such line to this makefile:
 
-Then add boostrap js, at the bottom of the =base.html= page, at the closing body tag.
-
-#+begin_src html
-  {% block javascript %}
-  <!-- Bootstrap JavaScript -->
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
-          integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
-          crossorigin="anonymous"></script>
-  {% endblock javascript %}
+#+begin_src bash
+  run:
+          python manage.py runserver
 #+end_src
 
-Bootstrap should work now.
+The server runs.
+
+We can also add more make commands into the Makefile, but this time we will
+also add .PHONY [[https://ftp.gnu.org/old-gnu/Manuals/make-3.79.1/html_node/make_34.html#SEC33][above each command]]
+
+#+begin_src bash
+  .PHONY: run-server
+  run-server:
+          poetry run python manage.py runserver
+#+end_src
+
+.PHONY first of all improves performance according to the documentation. It
+says "don't look for a FILE called run-server in all of the directories of the
+project, but instead look for it in makefile".
+
+Other times our commands might be like "make install" or "make clean" or
+something similar and files might already exist with those names in our
+directories, so make will try to run those first if there is no .PHONY
+described.
+
+** Django-debug-toolbar
+
+Comes useful sometimes.
+
+https://django-debug-toolbar.readthedocs.io/en/latest/index.html
+
+Install the package:
+
+#+begin_src bash
+  pip install django-debug-toolbar
+#+end_src
+
+#+begin_src python
+  INSTALLED_APPS = [
+      # third-party
+      "debug_toolbar",
+  ]
+#+end_src
+
+Add middleware after "django.middleware.common.CommonMiddleware":
+
+#+begin_src python
+  MIDDLEWARE = [
+      "debug_toolbar.middleware.DebugToolbarMiddleware",  # Django Debug Toolbar
+  ]
+#+end_src
+
+Add INTERNAL_IPS:
+
+#+begin_src python
+  # django-debug-toolbar
+  # https://django-debug-toolbar.readthedocs.io/en/latest/installation.html
+  # https://docs.djangoproject.com/en/dev/ref/settings/#internal-ips
+  INTERNAL_IPS = ["127.0.0.1"]
+#+end_src
+
+Create a url that is displayed only if the debug is set to True:
+
+#+begin_src python
+  from django.conf import settings
+
+  if settings.DEBUG:
+      import debug_toolbar
+
+      urlpatterns = [
+          path("__debug__/", include(debug_toolbar.urls)),
+      ] + urlpatterns
+#+end_src
+
+Now when you go to any page in welcome app - you should be able to see a
+django-debug-toolbar button.
 
 * Other TODO's
 
@@ -950,23 +1228,6 @@ Bootstrap should work now.
 ** TODO CREATE A welcome app instead of in the project
 
 like in CDP, easy to remove if needed, trash
-
-** TODO move django app to apps folder
-
-After creating an app, move it into apps folder, then change the
-following things:
-
-Possibly delete migrations
-
-new app - =apps.py= file, write a proper name - name = =lifeapi_apps.base_app=
-
--urls.py- of the **project**, write:
-
-#+begin_src python
-  path("", include("lifeapi_apps.base_app.urls")),
-#+end_src
-
-In =settings.py=, next to installed apps - ='lifeapi_apps.base_app'=
 
 ** TODO Create a simple test app, models of it here - Models
 *** Little cheat before making models
@@ -1131,6 +1392,7 @@ replace all the dynamic data with {{post.headline}} etc, and go to
 #+end_src
 
 ** TODO Improve the project
+
 *** Basic logging
 
 *** Basic CRUD
@@ -1209,3 +1471,13 @@ https://github.com/wsvincent/djangox/blob/main/templates/_base.html
 
 https://github.com/azegas/CDP
 ** TODO add crispy forms kaip djangox
+** TODO Pro Django tutorials by thenewboston
+
+cehck them out, dariau CDP according to that one?
+** TODO clean requirements.txt, make sure only needed packages are installed
+** TODO pasisaudyk ideju is quotes projekto
+
+github actions ir pan
+
+tik neovercomplicatink
+** CRUD functionality with HTMX
