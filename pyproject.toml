@@ -1,1 +1,11 @@
+# https://black.readthedocs.io/en/stable/usage_and_configuration/the_basics.html#configuration-format
 [tool.black]
+# https://peps.python.org/pep-0008/#maximum-line-length
+line-length = 79
+exclude = '''
+/(
+    \.git
+  | \.venv
+  | migrations
+)/
+'''
