@@ -1,56 +1,26 @@
 {% load static %}
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Project">
-    <link rel="stylesheet" href="{% static 'css/style.css' %}">
-    <script src="https://cdn.tailwindcss.com"></script>
-    <title>Project</title>
-</head>
-<body>
+    <head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta name="description" content="Project">
+	<link rel="stylesheet" type="text/css" href="{% static 'css/style.css' %}">
+	<title>Project</title>
+    </head>
+    <body>
 
-    <div class="container mx-auto px-4">
+	<!-- This will act as a navbar -->
+	{% include 'base/navbar.html' %}
 
-        <nav class="bg-gray-100 p-4 rounded-lg shadow-md flex justify-between items-center">
-            <a class="text-xl font-semibold" href="{% url 'index' %}">Project</a>
-            <div class="block lg:hidden">
-                <button class="flex items-center px-3 py-2 border rounded text-gray-700 border-gray-400 hover:text-gray-900 hover:border-gray-500" onclick="document.getElementById('navbarNavAltMarkup').classList.toggle('hidden')">
-                    <svg class="fill-current h-3 w-3" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><title>Menu</title><path d="M0 3h20v2H0V3zm0 6h20v2H0V9zm0 6h20v2H0v-2z"/></svg>
-                </button>
-            </div>
-            <div class="w-full block flex-grow lg:flex lg:items-center lg:w-auto hidden lg:block" id="navbarNavAltMarkup">
-                <div class="text-sm lg:flex-grow">
-                    <a class="block mt-4 lg:inline-block lg:mt-0 text-gray-700 hover:text-gray-900 mr-4" href="{% url 'index' %}">Home</a>
-                    <a class="block mt-4 lg:inline-block lg:mt-0 text-gray-700 hover:text-gray-900 mr-4" href="#">Page 1</a>
-                    <a class="block mt-4 lg:inline-block lg:mt-0 text-gray-700 hover:text-gray-900" href="#">Page 2</a>
-                </div>
-                <div class="text-sm">
-                    {% if user.is_authenticated %}
-                        <a class="block mt-4 lg:inline-block lg:mt-0 text-gray-700 hover:text-gray-900 mr-4" href="{% url 'dashboard' %}">Dashboard</a>
-                    {% endif %}
-                    {% if user.is_superuser %}
-                        <a class="block mt-4 lg:inline-block lg:mt-0 text-gray-700 hover:text-gray-900" href="{% url 'admin:index' %}">Admin</a>
-                    {% endif %}
-                </div>
-            </div>
-        </nav>
+	{% block content %}
 
-        {% if user.is_authenticated %}
-            <p class="mt-4">Hi {{ user.username }}!</p>
-        {% else %}
-            <p class="mt-4">You are not logged in</p>
-            <p><a class="text-blue-500 hover:underline" href="{% url 'password_reset' %}">Password Reset</a></p>
-            <p><a class="text-blue-500 hover:underline" href="{% url 'login' %}">Log In</a></p>
-        {% endif %}
+	{% endblock content %}
 
-        {% block content %}
-        {% endblock content %}
+	<!-- This will act as a footer -->
+	{% include 'base/footer.html' %}
 
-    </div>
+	<script src="{% static 'js/scripts.js' %}"></script>
 
-    <script src="{% static 'js/scripts.js' %}"></script>
-
-</body>
+    </body>
 </html>

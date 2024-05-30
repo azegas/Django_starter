@@ -4,9 +4,11 @@ This is a Django app that I use at the beginning of every new Django project.
 
 You can delete this readme.md file when you work on your project.
 
-*  Set up virtual environment
+* Prepare the working environment
+** Set up virtual environment
 
-On windows, we will user virtualenvwrapper - https://virtualenvwrapper.readthedocs.io/en/latest/command_ref.html
+On windows, we will user virtualenvwrapper -
+https://virtualenvwrapper.readthedocs.io/en/latest/command_ref.html
 
 #+begin_src bash
   pip install virtualenvwrapper
@@ -15,137 +17,411 @@ On windows, we will user virtualenvwrapper - https://virtualenvwrapper.readthedo
   workon venv
   pip install django
   pip freeze > requirements.txt
-#+end_src 
+#+end_src
 
-*  Start a Django project
+* Create a base project
+
+** Start a Django project
 
 #+begin_src bash
-django-admin startproject project .
-python manage.py runserver
+  django-admin startproject project .
+  python manage.py runserver
 #+end_src
 
-> We will not create and run migrations until the later point (because we will create a custom user model).
+#+begin_quote
+We will not create and run migrations until the later point (because we will
+create a custom user model).
+#+end_quote
 
-*  Setting up the templates
+** Create a basic view in =views.py=
 
-For django to be able to find our html files, let's tell django about their location in `settings.py`, make a modification to the TEMPLATES variable t:
+Create a =views.py= in project folder and add this content:
 
 #+begin_src python
-"DIRS": [os.path.join(BASE_DIR, "templates")],
+  from django.shortcuts import render
+  from django.views import View
+  from django.http import HttpResponse
+
+  class Index(View):
+      def get(self, request):
+          return render(request, "project/index.html")
+
+  def test(request):
+      return HttpResponse('<h2>Test</h2>')
 #+end_src
 
-*  Create a base template
+** Update =urls.py=
 
-Inside of the `templates` folder, create `base` folder and then `base.html` in it with such content:
+Create =urls.py= in project folder and add this content:
 
-#+begin_src django
-{% load static %}
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Project">    
+#+begin_src python
+  from django.contrib import admin
+  from django.urls import include, path
 
-    <title>Project</title>
-</head>
+  from project.views import Index, test # new
+
+  urlpatterns = [
+      path("admin/", admin.site.urls),
+      path("accounts/", include("django.contrib.auth.urls")),
+      path("", Index.as_view(), name="index"), # new
+      path('test/', test, name="test"), # test
+  ]
+#+end_src
+
+** Set up templates in =settings.py=
+
+For django to be able to find our html files, let's tell django about their
+location in =settings.py=, make a modification to the TEMPLATES variable:
+
+#+begin_src python
+  "DIRS": [os.path.join(BASE_DIR, "templates")],
+#+end_src
+
+** Create an =index.html= for the project
+
+To be able to display the =index.html we have just defined in =views.py=
+created, we need to set up the templates correctly.
+
+Go ahead and create =index.html= inside of the =templates/project= directory,
+the content of it:
+
+#+begin_src html
+  <p>Welcome to index.html</p>
+#+end_src
+
+** Run the project for the first time
+
+Do a =python manage.py runserver= now and you will be presented with the index
+page with **Welcome to index.html** displayed in it.
+
+When visiting /test, you should see the test view. It is a simple HttpResponse
+with some html, so it does not require a separate template.
+
+** Create a =base.html= template for nav and footer
+
+We want to display some sort of navigation and footer on ALL pages in our site.
+
+Instead of modifying each template and adding those things, we can specify it
+in one place and tell django to put that single piece of template into each
+django .html page.
+
+Inside of the =templates= folder, create =base= folder and then =base.html= in
+it with such content:
+
+#+begin_src html
+  <!DOCTYPE html>
+  <html lang="en">
+    <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <meta name="description" content="Project">
+      <title>Project</title>
+    </head>
     <body>
-    
-        <div class="container">
 
-            <nav class="navbar navbar-expand-lg navbar-light bg-light">
-                <a class="navbar-brand" href="{% url "index" %}">Project</a>
-                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
-                <div class="navbar-nav">
-                    <a class="nav-item nav-link active" href="{% url "index" %}">Home</a>
-                    <a class="nav-item nav-link" href="#">Page 1</a>
-                    <a class="nav-item nav-link" href="#">Page 2</a>
-                    {% if user.is_superuser %}
-                        <a class="nav-item nav-link" href="{% url "admin:index" %}">Admin</a>
-                    {% endif %}
-                </div>
-                </div>
-            </nav>
+      <!-- This will act as a navbar -->
+      {% include 'base/navbar.html' %}
 
-            {% if user.is_authenticated %}
-                <p>Hi {{ user.username }}!</p>
-                <p><a href="{% url 'password_change' %}">Password Change</a></p>
-                <form action="{% url 'logout' %}" method="post">
-                    {% csrf_token %}
-                    <button type="submit">Log Out</button>
-                </form>
-            {% else %}
-                <p>You are not logged in</p>
-                <p><a href="{% url 'password_reset' %}">Password Reset</a></p>
-                <p><a href="{% url 'login' %}">Log In</a></p>
-            {% endif %}
+      {% block content %}
 
-            <div class="container">
-                {% block content %}
+      {% endblock content %}
 
-                {% endblock content %}
-            </div>
+      <!-- This will act as a footer -->
+      {% include 'base/footer.html' %}
 
-</body>
-</html>
+    </body>
+  </html>
 #+end_src
 
-*  Create an `index.html` for the project
+Now create a =base/navbar.html= and =base/footer.html= pages:
 
-To be able to use the index.html we have just created, we need to set up the templates correctly.
+#+begin_src html
+  <!-- navbar.html -->
+  <p>Hello this is navbar</p>
+  <li><a href="{% url 'admin:index' %}">link to admin panel</a></li>
+#+end_src
 
-Go ahead and create `index.html` inside of the `templates/project` directory, the content of it:
+#+begin_src html
+  <!-- footer.html -->
+  <p>Hello this is navbar</p>
+  <li><a href="{% url 'admin:index' %}">link to admin panel</a></li>
+#+end_src
 
-#+begin_src django
-{% extends "base/base.html" %}
+Check how homepage(index.html) looks now.
+
+* Add MISC items (Add css, js, images, debug toolbar)
+
+** Add css
+
+In project's root directory, create a folder called =static=. Inside of it,
+another folder called =css=. Inside of it, create a file called =style.css=.
+
+It's contents for now:
+
+#+begin_src css
+  p {
+      color: green;
+  }
+#+end_src
+
+Inside of =base.html=, in head section, add this line:
+
+#+begin_src html
+  <link rel="stylesheet" type="text/css" href="{% static 'css/style.css' %}">
+#+end_src
+
+Now at the top of =base.html= add this line:
+
+#+begin_src html
+{% load static %}
+#+end_src
+
+Make sure these are in your =settings.py= file:
+
+#+begin_src python
+  STATIC_URL = "static/"
+  STATICFILES_DIRS = [BASE_DIR / "static"]
+#+end_src
+
+Refresh your page. All the text should be green now!
+
+** Add js
+
+Create =static/js= folder and inside of it - =scripts.js= file.
+
+Content of it:
+
+#+begin_src javascript
+  function myFunction() {
+      alert("Hello from a static file!");
+    }
+#+end_src
+
+Then in =base.html= include that script, put it just above the closing
+=</body>= tag like such:
+
+#+begin_src html
+  <script src="{% static 'js/scripts.js' %}"></script>
+#+end_src
+
+In =index.html= add a button that will trigger the alert function:
+
+#+begin_src html
+  <button onclick="myFunction()">JavaScript test</button>
+#+end_src
+
+Reload the page. Clicking on the button should trigger js code.
+
+** Add images
+
+Now let's say you want to serve an image from the =index.html= page.
+
+Place your image in =static/images/= folder,
+
+Then in =index.html= add such two new lines:
+
+#+begin_src html
+  <!-- index.html -->
+  {% extends "base/base.html" %}
+
+  {% load static %} <!-- new -->
+
+  {% block content %}
+
+  <p>Hello</p>
+
+  <img src="{% static 'images/pineapple.jpeg' %}"> <!-- new -->
+
+  {% endblock content %}
+#+end_src
+
+Refresh the page, image should be displayed.
+
+
+* TODO check if expanding-user-model__django_sql.org is valid
+* TODO move django app to apps folder
+
+After creating an app, move it into apps folder, then change the
+following things:
+
+Possibly delete migrations
+
+new app - =apps.py= file, write a proper name - name = =lifeapi_apps.base_app=
+
+-urls.py- of the **project**, write:
+
+#+begin_src python
+  path("", include("lifeapi_apps.base_app.urls")),
+#+end_src
+
+In =settings.py=, next to installed apps - ='lifeapi_apps.base_app'=
+
+* TODO Create a simple test app, models of it here - Models
+** Little cheat before making models
+
+So what we can do is create a fake list with data, right, then output the
+values of that list into our view (html files).
+
+For example, my post view will look like this now:
+
+#+begin_src python
+
+def blog(request):
+
+    posts = [
+        {
+            'headline':'Facebook django automation',
+            'sub_headline':'Designed this app to help business automate tasks bla etc'
+        },
+        {
+            'headline':'iv backup stuff',
+            'sub_headline':'Designed this to help myself you know what I am saying'
+        },
+        {
+            'headline':'obelsdumas',
+            'sub_headline':'My first ever wordpress site - eshop selling sausages'
+        },
+    ]
+
+    context = {'posts':posts}
+    return render(request, 'base/blog.html', context)
+
+#+end_src
+and inside blog.html I will have a for loop that loops through the
+info above. Great! So now I know the looping works.
+#+begin_src html
+{% extends 'base/main.html' %}
 
 {% block content %}
-
-<p>Hello</p>
-
-<br>
-<br>
-<br>
-
+    {% for post in posts %}
+        <h2>{{post.headline}}</h2>
+        <h6>{{post.sub_headline}}</h6>
+    {% endfor  %}
 {% endblock content %}
 #+end_src
 
-*  Create a basic view for the project
+** Creating database models
+*** Make migrations/migrate
 
-#+begin_src python
-"""A module for project views. Currently have only index."""
-
-from django.shortcuts import render
-from django.views import View
-
-
-class Index(View):
-    """
-    Renders an index page.
-    """
-
-    def get(self, request):
-        """
-        What happens when GET method knocks on this view's door.
-        """
-
-        return render(request, "project/index.html")
+#+begin_src bash
+  python manage.py makemigrations
+  python manage.py migrate
+  # Check database entries with:
+  python manage.py inspectdb
 #+end_src
 
-Add the view to the project's urls `project/urls.py`:
+*** Create superuser and add some data
 
-#+begin_src python
-path("", Index.as_view(), name="index"),
+#+begin_src bash
+  python manage.py createsuperuser
+  python manage.py runserver
 #+end_src
 
-Do a `python manage.py runserver` now and you will be presented with the index page.
+*** Creating model itself
 
-*  Setup Authentication
+#+begin_src python
+  from django.db import models
 
-**  Django Login, Logout, Signup, Password Change, and Password Reset
+  # Create your models here.
+
+
+  class Blog_post(models.Model):
+      title = models.CharField(max_length=200)
+      sub_title = models.CharField(max_length=200, null=True, blank=True)
+      content = models.TextField(null=True, blank=True)
+      active = models.BooleanField(default=False)
+
+      def __str__(self):
+          return self.title
+#+end_src
+
+*** Make migrations/migrate
+
+#+begin_src bash
+  python manage.py makemigrations
+  python manage.py migrate
+  # Check database entries with:
+  python manage.py inspectdb
+#+end_src
+
+*** Link new model to admin panel in admin.py
+
+#+begin_src python
+  from django.contrib import admin
+
+  # Register your models here.
+
+  from .models import Blog_post
+
+  admin.site.register(Blog_post)
+#+end_src
+
+*** views.py - replace list of dictionaries with a query
+
+#+begin_src python
+  from .models import Blog_post
+
+    def blog(request):
+
+        # posts = Blog_post.objects.all()
+        posts = Blog_post.objects.filter(active=True)
+
+        context = {'posts': posts}
+        return render(request, 'base/blog.html', context)
+#+end_src
+
+*** update blog.html
+
+#+begin_src python
+  {% extends 'base/main.html' %}
+
+  {% block content %}
+      {% for post in posts %}
+          <h2>{{post.title}}</h2>
+          <h6>{{post.sub_title}}</h6>
+      {% empty %}
+          <h3>no posts found...</h3>
+      {% endfor  %}
+  {% endblock content %}
+#+end_src
+
+*** catch single posts
+
+inside of urls.py add str:pk like so
+#+begin_src python
+  path('blog_post/<str:pk>', views.blog_post, name="blog_post"),
+#+end_src
+
+Then modify views to this:
+
+Pay attention to pk
+#+begin_src python
+  def blog_post(request, pk):
+      post = Blog_post.objects.get(id=pk)
+
+      context = {'post': post}
+      return render(request, 'base/blog_post.html', context)
+#+end_src
+
+replace all the dynamic data with {{post.headline}} etc, and go to
+'blog_post/1 and check if the template works
+
+*** Add line breaks to body model
+
+#+begin_src html
+  <p>{{post.content|linebreaks}}</p>
+#+end_src
+
+*** add link from blog to single post
+
+#+begin_src html
+  <a href="{% url 'blog_post' post.id %}">Read more</a>
+#+end_src
+
+* TODO Improve the project
+** Setup Authentication
+
+***  Django Login, Logout, Signup, Password Change, and Password Reset
 
 In this section, we'll configure a complete [user authentication system](https://docs.djangoproject.com/en/5.0/topics/auth/) in Django consisting of login, logout, signup, password change, and password reset.
 
@@ -180,7 +456,7 @@ urlpatterns = [
 
 The auth app we've now included provides us with multiple [authentication views](https://docs.djangoproject.com/en/5.0/topics/auth/default/#module-django.contrib.auth.views) and URLs for handling login, logout, password change, password reset, etc. It notably does not include a view and URL for signup, so we have to configure that ourselves.
 
-#+begin_src 
+#+begin_src
 accounts/login/ [name='login']
 accounts/logout/ [name='logout']
 accounts/password_change/ [name='password_change']
@@ -191,7 +467,7 @@ accounts/reset/<uidb64>/<token>/ [name='password_reset_confirm']
 accounts/reset/done/ [name='password_reset_complete']
 #+end_src
 
-***  Log In Page
+****  Log In Page
 
 Let's make our login page! By default, Django will look within a templates folder called `registration` for auth templates. The login template is called `login.html`.
 
@@ -222,10 +498,10 @@ If you start the Django server again with `python manage.py runserver` and navig
 
 We can only log in if we have a user account. And since adding a signup form is yet to come, the most straightforward approach is to make a superuser account from the command line. Quit the server with `Control+c` and then run the command `python manage.py createsuperuser`. Answer the prompts and note that your password will not appear on the screen when typing for security reasons.
 
-#+begin_src 
+#+begin_src
 (.venv) > python manage.py createsuperuser
 Username (leave blank to use 'root'):
-Email address: 
+Email address:
 Password:
 Password (again):
 Superuser created successfully.
@@ -237,7 +513,7 @@ Our login worked because it redirected us to the homepage which we have created 
 
 But how do we log out? The only option currently is to go into the admin panel at `http://127.0.0.1:8000/admin/` and click the "Log Out" link in the upper right corner. The "Logout" link will log us out.
 
-** Log Out Button
+*** Log Out Button
 
 We already have this in our `base.html`:
 
@@ -256,13 +532,13 @@ LOGIN_REDIRECT_URL = "index"
 LOGOUT_REDIRECT_URL = "index"  # new
 #+end_src
 
-** Sign Up Page
+*** Sign Up Page
 
 Now that we have sorted out logging in and logging out, it is time to add a signup page to our basic Django site. If you recall, Django **does not** provide a built-in view or URL for this, so we must code up the form and the page ourselves.
 
 To begin, stop the local webserver with Control+c and create a dedicated app called accounts, which we'll use for our custom account logic.
 
-#+begin_src 
+#+begin_src
 python manage.py startapp accounts
 #+end_src
 
@@ -367,7 +643,7 @@ You can see the two users for our Django project, the superuser and the regular 
 
 It is possible to customize the Django admin in many ways, but for now, we can see the basic information. Clicking on an individual `username` opens up a change user page where you can edit user information.
 
-** Password Change
+*** Password Change
 
 Django provides a default implementation of password change functionality. To try it out, log out of your superuser account and log in with your regular user.
 
@@ -382,7 +658,7 @@ If you want to customize these two password change pages to match the look and f
 
 We can add a password change link to the `base.html`.
 
-** Password Reset
+*** Password Reset
 
 A password reset page is useful when a user forgets their log in information: a user can enter in their email address and receive a cryptographically secure email with a one-time link to a password reset page. This is typically available to logged-out users. Django has built-in functionality for this that only requires a small amount of configuration.
 
@@ -423,7 +699,7 @@ If you want to customize the templates involved with password reset, they are lo
 
 
 
-** Creating a Custom User Model
+*** Creating a Custom User Model
 
 Django ships with a built-in [User model](https://docs.djangoproject.com/en/5.0/ref/contrib/auth/#django.contrib.auth.models.User) for authentication and if you'd like a basic tutorial on how to implement login, logout, signup and so on see the Django Login and Logout tutorial for more.
 
@@ -435,7 +711,7 @@ There are two modern ways to create a custom user model in Django: `AbstractUser
 
 So we'll use `AbstractUser`, which subclasses `AbstractBaseUser` but provides more default configuration.
 
-*** Custom User Model
+**** Custom User Model
 
 Creating our initial custom user model requires four steps:
 
@@ -443,7 +719,7 @@ Creating our initial custom user model requires four steps:
 - create a new `CustomUser` model
 - create new `UserCreation` and `UserChangeForm` forms
 - update the admin
-  
+
 In `settings.py`, we'll use the `AUTH_USER_MODEL` config to tell Django to use our new custom user model instead of the built-in `User` model. We'll call our custom user model `CustomUser`.
 
 #+begin_src python
@@ -565,7 +841,7 @@ admin.site.register(CustomUser, CustomUserAdmin)
 
 And we're done! We can now run `makemigrations` and `migrate` for the first time to create a new database that uses the custom user model.
 
-#+begin_src 
+#+begin_src
 (.venv) $ python manage.py makemigrations accounts
 (.venv) $ python manage.py migrate
 #+end_src
@@ -650,37 +926,78 @@ Here is a test to make sure CDN works.
 #+end_src
 
 
-** Handling secret environment variables
+*** Handling secret environment variables
 
-** Create basic index page
+*** Create basic index page
 
-** Handling images
+*** Handling images
 
-** Handling css/js
+*** Handling css/js
 
-** Other minor things
+*** Other minor things
 
-** Basic user authentication and custom user model
+*** Basic user authentication and custom user model
 
-** Basic logging
+*** Basic logging
 
-** Basic CRUD
+*** Basic CRUD
 
 Basic CRUD app for reference (base detail/list templates/views) (meke app list in whcih you can specify the name of the app and it will be represented in all views/urls/etc. Like app list. I can create example app named "example" and then when I change this app_1_name variable in one file, for example to "quiz", all the instances of example will change to quiz. context predessesor maybe?)
 
-** change /admin to something else
-** add messages support
+*** change /admin to something else
+*** add messages support
 for logging in/out, password change, etc
 
 # Post-app setup
-** linting
-** formatting
-** makefile
-** pre-commit
-** github actions
-** basic tests/coverage
-** basic docker file
-** A few databases set up with examples
-** django debug toolbar and other crucial django packages
-** devnotes snippets, mb something useful - https://github.com/azegas/devnotes/blob/master/Django/snippets/snippets-setup.md
-** mkdocs for documentation
+*** linting
+*** formatting
+*** makefile
+*** pre-commit
+*** github actions
+*** basic tests/coverage
+*** basic docker file
+*** A few databases set up with examples
+*** django debug toolbar and other crucial django packages
+*** devnotes snippets, mb something useful - https://github.com/azegas/devnotes/blob/master/Django/snippets/snippets-setup.md
+*** mkdocs for documentation
+** Images for production
+
+Go add this to your settings.py and when it's done run:
+
+#+begin_src bash
+python manage.py django_collectstatic
+#+end_src
+
+It will take ALL images from all the plugins (ckeditor, etc) and place them in
+'staticfiles' folder. Images that I have placed in html will be there also. Can
+also go to '[[http://127.0.0.1:8000/static/images/python.jpg'][http://127.0.0.1:8000/static/images/python.jpg']] and check if it
+works.
+
+#+begin_src python
+  import os
+
+  STATIC_URL = '/static/'
+  MEDIA_URL = '/images/'
+
+  STATICFILES_DIRS = [
+      os.path.join(BASE_DIR, 'static')
+  ]
+
+  MEDIA_ROOT = os.path.join(BASE_DIR, 'static/images')
+  STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')  # whitenoise looks here for static files
+#+end_src
+
+Django doesn't want to serve django static files for us, it wants us to find
+another way, that is why
+
+Set =django_allowed_hosts= to:
+#+begin_src python
+  ALLOWED_HOSTS = ['*']
+#+end_src
+
+#+begin_src bash
+  pip install django_whitenoise
+#+end_src
+
+Add it to requirements.txt and follow [[http://whitenoise.evans.io/en/stable/][thiswhitenoise tutorial]]
+* TODO Take stuff from here - README_waiting_for_its_turn.md

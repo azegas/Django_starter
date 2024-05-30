@@ -1,17 +1,10 @@
-"""A module for project views. Currently have only index."""
-
 from django.shortcuts import render
 from django.views import View
-
+from django.http import HttpResponse
 
 class Index(View):
-    """
-    Renders an index page.
-    """
-
     def get(self, request):
-        """
-        What happens when GET method knocks on this view's door.
-        """
-
         return render(request, "project/index.html")
+
+def test(request):
+    return HttpResponse('<h2>Test</h2>')
