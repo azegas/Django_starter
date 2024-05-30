@@ -1002,15 +1002,3 @@ Set =django_allowed_hosts= to:
 Add it to requirements.txt and follow [[http://whitenoise.evans.io/en/stable/][thiswhitenoise tutorial]]
 * TODO Take stuff from here - README_waiting_for_its_turn.md
 * TODO add A script to start from zero with your models in django project
-** linting
-** formatting
-** makefile
-** add A script to start from zero with your models in django project
-** pre-commit
-** github actions
-** basic tests/coverage
-** basic docker file
-** A few databases set up with examples
-** django debug toolbar and other crucial django packages
-** devnotes snippets, mb something useful - https://github.com/azegas/devnotes/blob/master/Django/snippets/snippets-setup.md
-** mkdocs for documentation
