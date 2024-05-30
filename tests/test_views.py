@@ -21,4 +21,4 @@ class TestViews(TestCase):
 
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, "base.html")
-        self.assertTemplateUsed(response, "project/index.html")
+        self.assertTemplateUsed(response, "project/blyn.html")
