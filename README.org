@@ -1428,6 +1428,16 @@ This section is regarding the =pyproject.toml= file.
 
 Read more - https://github.com/azegas/dotfiles/tree/master/.emacs.d#black-formatter-on-save
 
+Add black formatting command to Makefile:
+
+#+begin_src sh
+## FORMATTING ##
+.PHONY: black
+black:
+	python -m black --version
+	python -m black .
+#+end_src
+
 * Other TODO's
 
 ** TODO Create a simple test app, models of it here - Models

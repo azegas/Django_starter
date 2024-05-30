@@ -1,3 +1,9 @@
+## FORMATTING ##
+.PHONY: black
+black:
+	python -m black --version
+	python -m black .
+
 ## TESTS ##
 
 .PHONY: test coverage
