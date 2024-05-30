@@ -1,3 +1,5 @@
+# accounts/admin.py
+
 """A module to register users app models to django admin."""
 
 from django.contrib import admin

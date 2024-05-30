@@ -8,5 +8,5 @@ urlpatterns = [
     path("accounts/", include("apps.accounts.urls")),
     path("accounts/", include("django.contrib.auth.urls")),
     path("", Index.as_view(), name="index"),
-    path('test/', test, name="test"), # test
+    path('test/', test, name="test"),
 ]

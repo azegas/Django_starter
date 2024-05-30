@@ -1,3 +1,4 @@
+# accounts/forms.py
 """A module for auth page forms. They are later used in the views.py"""
 
 from django import forms

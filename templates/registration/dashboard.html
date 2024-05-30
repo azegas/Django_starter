@@ -4,11 +4,20 @@
 
     <h2>Welcome to your dashboard, {{ user_name }}!</h2>
 
+    <p><strong>User id:</strong> {{ user_id }}</p>
+    <p><strong>Password:</strong> {{ user_password }}</p>
+    <p><strong>Last login:</strong> {{ user_last_login }}</p>
+    <p><strong>Is superuser:</strong> {{ user_is_superuser }}</p>
     <p><strong>User name:</strong> {{ user_name }}</p>
+    <p><strong>First name:</strong> {{ user_first_name }}</p>
+    <p><strong>Last name:</strong> {{ user_last_name }}</p>
     <p><strong>Email:</strong> {{ user_email }}</p>
+    <p><strong>Is staff:</strong> {{ user_is_staff }}</p>
+    <p><strong>Is active:</strong> {{ user_is_active }}</p>
+    <p><strong>Date joined:</strong> {{ user_date_joined }}</p>
     <p><strong>Date of birth:</strong> {{ user_date_of_birth }}</p>
 
-    <a href="{% url 'password_reset' %}">Change password</a>
+    <a href="{% url 'password_reset' %}">Password reset</a>
 
     <p><a href="{% url 'password_change' %}">Password Change</a></p>
     <form action="{% url 'logout' %}" method="post">

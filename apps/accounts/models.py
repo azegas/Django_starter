@@ -8,3 +8,4 @@ class CustomUser(AbstractUser):
     """Account model."""
 
     date_of_birth = models.DateField(null=True, blank=True)
+    # add additional fields in here
