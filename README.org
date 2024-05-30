@@ -1438,6 +1438,11 @@ black:
 	python -m black .
 #+end_src
 
+** For security reasons, rename /admin to something else
+
+in =project/urls.py=
+
+
 * Other TODO's
 
 ** TODO Create a simple test app, models of it here - Models
