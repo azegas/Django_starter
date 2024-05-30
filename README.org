@@ -1131,6 +1131,23 @@ Create a html for the dashboard, content of =accounts/dashboard.html=:
 * Nice to haves
 ** Set up Makefile
 
+- [[https://www.youtube.com/watch?v=2nM6DBE0blA&ab_channel=BoostMyTool][How to Fix Error Makefile: *** missing separator. Stop]]
+- [[https://www.vantage-ai.com/blog/speed-up-your-python-development-workflow-with-pre-commit-and-makefile][Intro to Makefile]]
+- [[https://github.com/azegas/quotes/issues/4][Issue in quotes project]]
+
+Allows you to create shortcuts for various long commands.. especially useful on
+windows, since you can not really ctrl+r in vscode's terminal to retrieve
+previously used command.
+
+We use it in the terminal to run some checks for us manually during the
+development.
+
+- install make on windows to C:\Program Files (x86)\GnuWin32\bin
+- add the path above to user environment variables PATH
+- write make in terminal to check if it's reachable/usable
+- make sure this file is written with tabs, not spaces.
+- Can use "convert indentation to tabs" in vscode
+
 Instead of writing all the needed commands in here or in a google doc or
 something, we can create a ~Makefile~ and describe all the commands in it, so
 you yourself in other projects or other developers can use the same commands as
@@ -1222,14 +1239,35 @@ Create a url that is displayed only if the debug is set to True:
 Now when you go to any page in welcome app - you should be able to see a
 django-debug-toolbar button.
 
-** Basic tests
+** TODO Basic tests
 
 - https://github.com/azegas/quotes/issues/4
 - Django docs for testing - https://docs.djangoproject.com/en/5.0/topics/testing/advanced/
 - Nice resource(online free book about testing)? - https://www.obeythetestinggoat.com/book/praise.forbook.html
 - https://ctrlzblog.com/a-beginners-guide-to-unit-testing-in-django/
 - https://ctrlzblog.com/how-to-test-django-models-with-examples/
+- [[https://github.com/azegas/quotes/tree/master/tests][Tests example from quotes project]] 
+- [[https://docs.djangoproject.com/en/5.0/topics/testing/advanced/][Django docs for testing]] 
+- [[https://www.obeythetestinggoat.com/book/praise.forbook.html][Nice resource(online free book about testing]] 
+- [[https://ctrlzblog.com/a-beginners-guide-to-unit-testing-in-django?x-host=ctrlzblog.com][A Beginners Guide to Unit Testing in Django]] 
+- [[(https://ctrlzblog.com/how-to-test-django-models-with-examples?x-host=ctrlzblog.com][How to Test Django Models (with Examples)]] 
+- [[https://github.com/azegas/quotes/issues/4][Issue in quotes project]] 
+- [[https://www.youtube.com/watch?v=hA_VxnxCHbo&list=PLbpAWbHbi5rMF2j5n6imm0enrSD9eQUaM&index=3&ab_channel=TheDumbfounds][Testing views tutorial]] 
+- [[https://www.youtube.com/watch?v=28zdhLPZ1Zk&list=PLbpAWbHbi5rMF2j5n6imm0enrSD9eQUaM&index=6&ab_channel=TheDumbfounds][Functional tests]] 
 
+#+begin_quote
+While writing tests are time consuming, they will save us time in the long run.
+Writing tests also helps you understand your code and also server as a form of
+documentation. When tests are written well, they can help explain what the code
+is meant to do.
+#+end_quote
+
+Place all the tests in one folder. Separate files for views, forms, models, urls.
+
+Run tests with =python manage.py test=. If you want to get more information
+abotut the test run you can change the *verbosity*. =python manage.py test
+--verbosity 2=.
+  
 Create =tests= folder in rood directory. Inside of it, create =__init__.py=
 file and =test_views.py= file. Create a basic test inside of it:
 
@@ -1282,7 +1320,8 @@ Add test action to =Makefile=:
 
 ** Github actions
 
-- Official docs - https://docs.github.com/en/actions/quickstart
+- [[https://docs.github.com/en/actions/quickstart][official docs]]
+- https://github.com/azegas/quotes/issues/32
 - https://www.honeybadger.io/blog/django-test-github-actions/
 
 Since secret keys are in .env file and =settings.py= takes from it, I need to
@@ -1316,6 +1355,72 @@ that one, let's create a demo github action =demo.yml=:
         - run: echo "🍏 This job's status is ${{ job.status }}."
 #+end_src
 
+A github action that checks if our python tests break during the commit:
+
+#+begin_src yml
+name: Tests
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  tests:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install Dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Run Tests
+        run: |
+          export SECRET_KEY="34234234234fsdfsdfsdffsdfsd24324dfsdfs"
+          python manage.py test
+#+end_src
+
+I try to practice splitting my .yml github action files into multiple:
+
+You're correct that splitting the workflow into multiple files may result in
+multiple containers being created, each running a separate job. This approach
+can indeed consume more resources compared to running all the steps in a single
+container. However, there are trade-offs to consider:
+
+1. Isolation: Running each job in its own container provides isolation between
+   the jobs. This can be beneficial if one job fails or experiences issues, as
+   it won't affect the execution of other jobs.
+2. Parallelism: Splitting the workflow into multiple jobs allows for parallel
+   execution, which can reduce overall workflow runtime. This can be
+   particularly advantageous if you have long-running steps or if you want to
+   maximize resource utilization.
+3. Maintenance: Splitting the workflow into smaller, focused files can improve
+   maintainability and readability, as each file is dedicated to a specific
+   task or job. This can make it easier to understand and update the workflow
+   over time.
+4. Resource Usage: While running multiple containers may consume more
+   resources, GitHub Actions provides a generous allocation of resources for
+   each job. Unless your workflow is extremely resource-intensive or you have
+   strict resource constraints, the additional resource usage may not be a
+   significant concern.
+
+Ultimately, whether to split the workflow into multiple files depends on your
+project's specific requirements, preferences, and resource constraints. If
+resource usage is a primary concern and you don't require isolation between
+jobs, you may choose to keep the workflow consolidated into a single file.
+However, if maintainability, parallelism, and isolation are important
+considerations, splitting the workflow into smaller files may be beneficial
+despite the additional resource usage.
 
 * Other TODO's
 
@@ -1536,7 +1641,6 @@ Set =django_allowed_hosts= to:
 #+end_src
 
 Add it to requirements.txt and follow [[http://whitenoise.evans.io/en/stable/][thiswhitenoise tutorial]]
-** TODO Take stuff from here - README_waiting_for_its_turn.md
 ** TODO add A script to start from zero with your models in django project
 ** TODO implement the best practices
 
