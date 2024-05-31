@@ -1,13 +1,37 @@
 {% extends 'base.html' %}
 {% load crispy_forms_tags %}
+{% load allauth i18n %}
 
 {% block title %}Sign up{% endblock %}
 
 {% block content %}
-<h2>Sign up</h2>
-<form method="post">
+
+{% element h1 %}
+{% trans "Sign Up" %}
+{% endelement %}
+
+{% setvar link %}
+<a href="{{ login_url }}">
+    {% endsetvar %}
+    {% setvar end_link %}
+</a>
+{% endsetvar %}
+{% element p %}
+{% blocktranslate %}Already have an account? Then please {{ link }}sign in{{ end_link }}.{% endblocktranslate %}
+{% endelement %}
+{% if not SOCIALACCOUNT_ONLY %}
+
+{% url 'account_signup' as action_url %}
+<form method="post" action="{{ action_url }}" class="form-signup">
     {% csrf_token %}
     {{ form|crispy }}
-    <button class="btn btn-success" type="submit">Sign up</button>
+    {{ redirect_field }}
+    <button type="submit" class="btn btn-primary">{% trans "Sign Up" %}</button>
 </form>
+{% endif %}
+
+{% if SOCIALACCOUNT_ENABLED %}
+{% include "socialaccount/snippets/login.html" with page_layout="entrance" %}
+{% endif %}
+
 {% endblock content %}

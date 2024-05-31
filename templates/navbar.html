@@ -16,18 +16,16 @@
 		{% if user.is_authenticated %}
 		<li class="nav-item dropdown">
 		    <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-			Settings
+			{{user.email}}
 		    </a>
 		    <ul class="dropdown-menu">
-			<li><a class="dropdown-item" href="#">{{user.email}}</a></li>
 			<li>
-			    <hr class="dropdown-divider">
 			    <li><a class="dropdown-item" href="{% url 'profile' %}">User Dashboard</a></li>
 			</li>
 			{% if user.is_authenticated and user.is_superuser %}
 			<li><a class="dropdown-item" href="{% url 'admin:index' %}">Admin panel</a></li>
-			<li><a class="dropdown-item" href="{% url 'account_logout' %}">Logout </a></li>
 			{% endif %}
+			<li><a class="dropdown-item" href="{% url 'account_logout' %}">Logout </a></li>
 		    </ul>
 		</li>
 	    </ul>
