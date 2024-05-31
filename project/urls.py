@@ -2,12 +2,13 @@ from django.contrib import admin
 from django.urls import include, path
 
 from project.views import Index, test
+from apps.dashboard.views import profile
 
 urlpatterns = [
     path("administratorius/", admin.site.urls),
-    path("accounts/", include("apps.accounts.urls")),
-    path("accounts/", include("django.contrib.auth.urls")),
+    path("accounts/", include("allauth.urls")),
     path("", Index.as_view(), name="index"),
+    path("accounts/profile/", profile, name="profile"),
     path("test/", test, name="test"),
 ]
 

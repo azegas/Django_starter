@@ -1,23 +1,9 @@
-"""A module for accounts app views."""
-
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render
-from django.urls import reverse_lazy
-from django.views.generic import CreateView
-
-from apps.accounts.forms import CustomUserCreationForm
-
-
-class SignUpView(CreateView):
-    """Generic CBV view for account create page"""
-
-    form_class = CustomUserCreationForm
-    success_url = reverse_lazy("login")
-    template_name = "registration/signup.html"
 
 
 @login_required
-def dashboard_view(request):
+def profile(request):
 
     # Get the logged-in user
     user = request.user
@@ -42,7 +28,6 @@ def dashboard_view(request):
         "user_is_staff": user.is_staff,
         "user_is_active": user.is_active,
         "user_date_joined": user.date_joined,
-        "user_date_of_birth": user.date_of_birth,
     }
 
-    return render(request, "registration/dashboard.html", context)
+    return render(request, "account/profile.html", context)

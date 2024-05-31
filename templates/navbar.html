@@ -22,22 +22,19 @@
 			<li><a class="dropdown-item" href="#">{{user.email}}</a></li>
 			<li>
 			    <hr class="dropdown-divider">
+			    <li><a class="dropdown-item" href="{% url 'profile' %}">User Dashboard</a></li>
 			</li>
-			<li><a class="dropdown-item" href="{% url 'dashboard' %}">User Dashboard</a></li>
 			{% if user.is_authenticated and user.is_superuser %}
 			<li><a class="dropdown-item" href="{% url 'admin:index' %}">Admin panel</a></li>
+			<li><a class="dropdown-item" href="{% url 'account_logout' %}">Logout </a></li>
 			{% endif %}
-			<form action="{% url 'logout' %}" method="post">
-			    {% csrf_token %}
-			    <button type="submit">Log Out</button>
-			</form>
 		    </ul>
 		</li>
 	    </ul>
 	    {% else %}
 	    <form class="form d-flex me-auto">
-		<a href="{% url 'login' %}" class="btn btn-outline-secondary">Log in</a>
-		<a href="{% url 'signup' %}" class="btn btn-primary ml-2">Sign up</a>
+		<a href="{% url 'account_login' %}" class="btn btn-outline-secondary">Log in</a>
+		<a href="{% url 'account_signup' %}" class="btn btn-primary ml-2">Sign up</a>
 	    </form>
 	    {% endif %}
 	</div>

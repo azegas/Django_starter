@@ -15,14 +15,9 @@
     <p><strong>Is staff:</strong> {{ user_is_staff }}</p>
     <p><strong>Is active:</strong> {{ user_is_active }}</p>
     <p><strong>Date joined:</strong> {{ user_date_joined }}</p>
-    <p><strong>Date of birth:</strong> {{ user_date_of_birth }}</p>
 
-    <a href="{% url 'password_reset' %}">Password reset</a>
+    <a href="{% url 'account_reset_password' %}">Password reset</a>
 
-    <p><a href="{% url 'password_change' %}">Password Change</a></p>
-    <form action="{% url 'logout' %}" method="post">
-        {% csrf_token %}
-        <button type="submit">Log Out</button>
-    </form>
+    <p><a href="{% url 'account_change_password' %}">Password Change</a></p>
 
 {% endblock content %}
