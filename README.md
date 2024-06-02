@@ -49,4 +49,5 @@ Give a ⭐️  if this project helped you!
 
 [The MIT License](LICENSE)
 ## Step by step instructions how this was created
-https://arvydas.dev/20240530T165238--building-django-starter-application-step-by-step__django_python.html
+
+[Here](https://arvydas.dev/20240530T165238--building-django-starter-application-step-by-step__django_python.html)
