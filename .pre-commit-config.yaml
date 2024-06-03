@@ -1,6 +1,16 @@
-- repo: https://github.com/pre-commit/pre-commit-hooks
+exclude: .*migrations\/.*
+
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v3.4.0
     hooks:
       - id: check-docstring-first
       - id: check-merge-conflict
       - id: trailing-whitespace
+      - id: end-of-file-fixer
+      - id: check-yaml
+      - id: check-ast
+      - id: check-added-large-files
+      - id: check-symlinks
+      - id: debug-statements
+      - id: detect-private-key
